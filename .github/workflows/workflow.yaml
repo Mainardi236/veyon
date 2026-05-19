@@ -1,0 +1,37 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start build
+        run: echo "Iniciando build..."
+
+      - name: Run build commands
+        run: |
+          if [ -f package.json ]; then
+            npm install
+            npm test
+          elif [ -f CMakeLists.txt ]; then
+            cmake -S . -B build
+            cmake --build build
+          elif [ -f Makefile ]; then
+            make
+          else
+            echo "Nenhum arquivo de build conhecido encontrado."
+            exit 1
+          fi
